@@ -5,6 +5,15 @@
 #include <iterator>
 #include <algorithm>
 
+static ecs::EntityManager* current_instance = nullptr;
+
+ecs::EntityManager* ecs::get_entity_manager(){
+    if(current_instance == nullptr)
+        current_instance = new EntityManager();
+
+    return current_instance;
+}
+
 ecs::EntityManager::~EntityManager() {
     for(auto it = m_components.begin(); it != m_components.end(); ++it){
         delete it->second;

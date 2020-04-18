@@ -4,7 +4,7 @@ APPNAME := "game"
 #Default to linux but can be overriden by the commandline
 BUILDFORPLATFORM := linux
 
-ALLDIRS := ${shell find src -type d -printu}
+ALLDIRS := ${shell find src -type d -print}
 
 DEPINC := deps/include
 
@@ -20,7 +20,7 @@ ifeq (linux, $(BUILDFORPLATFORM))
 	LINKER := clang++
 	LFLAGS := -lSDL2 -lSDL2_mixer -lSDL2_ttf -lSDL2_image
 	CXX := clang++
-	CXXFLAGS := -std=c++17 -I $(DEPINC)
+	CXXFLAGS := -std=c++2a -I $(DEPINC)
 	LDLIBS :=-lglfw -lGL
 
 	SRCFILES += $(wildcard src/platform/desktop/*.cpp)
@@ -34,7 +34,7 @@ ifeq (windows, $(BUILDFORPLATFORM))
 	LINKER := /usr/bin/x86_64-w64-mingw32-c++
 	LFLAGS := -static-libstdc++ -static-libgcc -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -I /winlib/include -L /winlib/lib
 	CXX := /usr/bin/x86_64-w64-mingw32-c++
-	CXXFLAGS := -std=c++17 -I /winlib/include -I $(DEPINC)
+	CXXFLAGS := -std=c++20 -I /winlib/include -I $(DEPINC)
 
 	SRCFILES += $(wildcard src/platform/desktop/*.cpp)
 
@@ -46,7 +46,7 @@ ifeq (web, $(BUILDFORPLATFORM))
 	LINKER := emcc
 	LFLAGS := --shell-file src/platform/web/index.html -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s USE_SDL_IMAGE=2
 	CXX := emcc
-	CXXFLAGS := -std=c++17 -I $(DEPINC)
+	CXXFLAGS := -std=c++2a -I $(DEPINC)
 
 	SRCFILES += $(wildcard src/platform/web/*.cpp)
 
@@ -58,7 +58,7 @@ ifeq (macos, $(BUILDFORPLATFORM))
 	LINKER := o64-clang++
 	LFLAGS := -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_ttf -L /osxcross/target/macports/pkgs/opt/local/lib -I /osxcross/target/macports/pkgs/opt/local/include -stdlib=libc++
 	CXX := o64-clang++
-	CXXFLAGS := -std=c++17 -stdlib=libc++ -I $(DEPINC)
+	CXXFLAGS := -std=c++2a -stdlib=libc++ -I $(DEPINC)
 
 	SRCFILES += $(wildcard src/platform/desktop/*.cpp)
 

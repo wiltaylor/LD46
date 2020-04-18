@@ -1,10 +1,20 @@
 #include "component.h"
+#include "entity.h"
 #include <cstddef>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <iostream>
 
 static unsigned int NextTypeId = 0;
+static ecs::ComponentManager* current_instance = nullptr;
+
+ecs::ComponentManager* ecs::get_component_manager(){
+    if(current_instance == nullptr)
+        current_instance = new ecs::ComponentManager();
+
+    return current_instance;
+}
 
 unsigned int ecs::ComponentBase::nextID() {
     return NextTypeId++;
@@ -86,10 +96,14 @@ ecs::GenerativeIndex ecs::ComponentContainer::add_component(unsigned int entity)
 }
 
 char* ecs::ComponentContainer::next() {
+
     while(m_current_ordinal < m_capacity) {
         if(m_inuse[m_current_ordinal] == true) {
+
+            char* pos = m_data + m_item_size * m_current_ordinal;
             m_current_ordinal++;
-            return m_data + m_item_size * m_current_ordinal;
+
+            return pos;
         }
 
         m_current_ordinal++;

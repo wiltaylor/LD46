@@ -2,10 +2,15 @@
 #include "ecs/event.h"
 #include "events.h"
 #include "platform/renderer.h"
+#include "platform/log.h"
 
 void RenderSystem::init(){
 
+    log_info("entering render system init");
+
     m_renderer = get_renderer();
+
+    log_info("Binding renderer events..");
 
     m_startrender = std::bind(&RenderSystem::on_start, this);
     m_endrender = std::bind(&RenderSystem::on_end, this);

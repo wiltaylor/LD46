@@ -28,6 +28,17 @@ private:
     std::vector<std::function<void()>*> m_functions;
 };
 
+class RenderEvent: public ecs::Event<RenderEvent> {
+public:
+    void register_handler(std::function<void()>* handler);
+    void unregister_handler(std::function<void()>* handler);
+    void invoke();
+
+
+private:
+    std::vector<std::function<void()>*> m_functions;
+};
+
 class EndRenderEvent: public ecs::Event<EndRenderEvent> {
 public:
     void register_handler(std::function<void()>* handler);

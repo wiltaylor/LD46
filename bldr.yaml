@@ -7,7 +7,7 @@ folders:
 actions:
         - name: build
           act_type: Meta
-          depend: [ "linux_x64", "windows_x64", "macos_x64", "web" ]
+          depend: [ "linux_x64", "web" ]
         - name: build-debug
           act_type: Meta
           depend: [ "linux_x64_debug" ]

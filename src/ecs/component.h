@@ -3,9 +3,12 @@
 #include <cstddef>
 #include <unordered_map>
 #include <vector>
-
+#include <iostream>
 
 namespace ecs {
+
+    class EntityManager;
+    EntityManager* get_entity_manager();
 
     struct ComponentBase {
         unsigned int Entity;
@@ -13,16 +16,16 @@ namespace ecs {
     };
 
     template<typename T>
-    struct ECSComponent : public ComponentBase {
+    struct Component : public ComponentBase {
         static const unsigned int TypeId;
         static const size_t SizeInBytes;
     };
 
     template<typename T>
-    const unsigned int ECSComponent<T>::TypeId(ComponentBase::nextID());
+    const unsigned int Component<T>::TypeId(ComponentBase::nextID());
 
     template<typename T>
-    const size_t ECSComponent<T>::SizeInBytes(sizeof(T));
+    const size_t Component<T>::SizeInBytes(sizeof(T));
 
 
     struct GenerativeIndex {
@@ -59,25 +62,40 @@ namespace ecs {
 
         template<typename T>
         void register_component_type(size_t capacity){
-            m_component_storage.insert(T::TypeId, new ecs::ComponentContainer(capacity, T::SizeInBytes, T::TypeId));
+            m_component_storage.insert(std::pair<unsigned int, ecs::ComponentContainer*>(T::TypeId, new ecs::ComponentContainer(capacity, T::SizeInBytes, T::TypeId)));
         }
 
         template<typename T>
         T* get_component(GenerativeIndex& index) {
-            assert(T::typeId == index.type_id);
+            assert(T::TypeId == index.type_id);
             return reinterpret_cast<T*>(m_component_storage[index.type_id]->get_component(index));
         }
 
+        //Not for calling directly
         template<typename T>
         GenerativeIndex add_component(unsigned int entity) {
-            return m_component_storage[T::TypeId]->add_component(entity);
+            auto result = m_component_storage[T::TypeId]->add_component(entity);
+            return result;
         }
 
         void remove_component(GenerativeIndex& index);
+
+        template<typename T>
+        void begin() {
+            m_component_storage[T::TypeId]->begin();
+        }
+
+        template<typename T>
+        T* next(){
+            return reinterpret_cast<T*>(m_component_storage[T::TypeId]->next());
+        }
+
 
     private:
         std::unordered_map<unsigned int, ecs::ComponentContainer*> m_component_storage;
     };
 
+
+    ecs::ComponentManager* get_component_manager();
 }
 #endif

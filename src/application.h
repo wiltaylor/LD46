@@ -13,6 +13,7 @@ public:
 private:
     StartFrameEvent* m_startFrame;
     StartRenderEvent* m_startRender;
+    RenderEvent* m_render;
     EndRenderEvent* m_endRender;
     ShutdownEvent* m_shutdown;
     bool m_running = true;

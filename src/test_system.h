@@ -11,6 +11,8 @@ public:
     void init() override;
     void on_enable() override;
     void on_disable() override;
+
+    void on_update();
 private:
     std::function<void(float)> m_on_update;
 };

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "../renderer.h"
 #include <functional>
+#include "sdl_assetmanager.h"
 
 class AssetManager;
 
@@ -17,12 +18,13 @@ public:
     void draw(unsigned int resource_id, glm::mat2 srcRect, glm::mat2 destRect) override;
     void draw(unsigned int resource_id, glm::mat2 srcRect, glm::mat2 destRect, glm::vec2 center, float angle) override;
 
-friend AssetManager* get_assetmanager();
+friend AssetManager* get_asset_manager();
 
 private:
     SDL_Window* m_window;
     SDL_Renderer *m_renderer;
     std::function<void()> m_shutdown;
+    SDLAssetManager* m_assetman;
 };
 
 

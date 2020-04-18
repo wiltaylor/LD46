@@ -1,5 +1,6 @@
 #include "events.h"
 #include <algorithm>
+#include "platform/log.h"
 
 void StartFrameEvent::register_handler(std::function<void(float)>* handler) {
     m_functions.push_back(handler);
@@ -36,6 +37,25 @@ void StartRenderEvent::invoke(){
     }
 
 }
+
+void RenderEvent::register_handler(std::function<void()>* handler) {
+    m_functions.push_back(handler);
+}
+
+void RenderEvent::unregister_handler(std::function<void() >* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void RenderEvent::invoke(){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func();
+    }
+
+}
+
 
 void EndRenderEvent::register_handler(std::function<void()>* handler) {
     m_functions.push_back(handler);

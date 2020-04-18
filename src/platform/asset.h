@@ -11,9 +11,9 @@ public:
     AssetManager() {};
     virtual ~AssetManager() {};
 
-    virtual unsigned int get_texture_asset(char* name, AssetPersistance persist) = 0;
+    virtual unsigned int get_texture_asset(const char* name, AssetPersistance persist) = 0;
 };
 
-AssetManager* getAssetManager();
+AssetManager* get_asset_manager();
 
 #endif // __ASSET_H_
