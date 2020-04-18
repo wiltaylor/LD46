@@ -4,6 +4,8 @@
 #include <functional>
 #include <vector>
 
+void register_all_events();
+
 class StartFrameEvent: public ecs::Event<StartFrameEvent> {
 public:
     void register_handler(std::function<void(float)>* handler);
@@ -14,6 +16,29 @@ public:
 private:
     std::vector<std::function<void(float)>*> m_functions;
 };
+
+class StartRenderEvent: public ecs::Event<StartRenderEvent> {
+public:
+    void register_handler(std::function<void()>* handler);
+    void unregister_handler(std::function<void()>* handler);
+    void invoke();
+
+
+private:
+    std::vector<std::function<void()>*> m_functions;
+};
+
+class EndRenderEvent: public ecs::Event<EndRenderEvent> {
+public:
+    void register_handler(std::function<void()>* handler);
+    void unregister_handler(std::function<void()>* handler);
+    void invoke();
+
+
+private:
+    std::vector<std::function<void()>*> m_functions;
+};
+
 
 
 #endif // __EVENTS_H_
