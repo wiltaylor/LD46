@@ -9,7 +9,7 @@ namespace ecs{
     };
 
     template<typename T>
-    class Event{
+    class Event: public EventBase{
     public:
         static const unsigned int TypeId;
     };
@@ -39,6 +39,6 @@ namespace ecs{
         std::unordered_map<unsigned int, EventBase*> m_events;
     };
 
-
+    EventManager* get_event_manager();
 }
 #endif // __EVENT_H_

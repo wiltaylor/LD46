@@ -10,6 +10,7 @@ SRCDIR := src
 BINDIR := bin
 
 SRCFILES = $(wildcard src/ecs/*.cpp)
+SRCFILES += $(wildcard src/*.cpp)
 
 #Linux
 ifeq (linux, $(BUILDFORPLATFORM))

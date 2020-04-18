@@ -1,6 +1,6 @@
 #ifndef __SYSTEM_H_
 #define __SYSTEM_H_
-
+#include <assert.h>
 #include <unordered_map>
 
 namespace ecs{
@@ -18,6 +18,7 @@ namespace ecs{
 
     template<typename T>
     class System : public SystemBase {
+    public:
         static const unsigned int TypeId;
         static const size_t SizeInBytes;
     };
@@ -70,6 +71,7 @@ namespace ecs{
     private:
         std::unordered_map<unsigned int, SystemBase*> m_systems;
     };
-}
 
+    SystemManager* get_system_manager();
+}
 #endif
