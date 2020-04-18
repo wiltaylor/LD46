@@ -32,7 +32,7 @@ SDLRenderer::SDLRenderer() {
 }
 
 SDLRenderer::~SDLRenderer() {
-   
+   SDL_Quit();
 }
 
 void SDLRenderer::begin(){

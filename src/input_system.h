@@ -11,10 +11,9 @@ public:
     void init() override;
     void on_enable() override;
     void on_disable() override;
-
     void on_update(float);
-
 private:
+
     std::function<void(float)> m_startframe;
     SDL_Event m_event;
 };

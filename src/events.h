@@ -39,6 +39,14 @@ private:
     std::vector<std::function<void()>*> m_functions;
 };
 
+class ShutdownEvent: public ecs::Event<ShutdownEvent> {
+public:
+    void register_handler(std::function<void()>* handler);
+    void unregister_handler(std::function<void()>* handler);
+    void invoke();
 
+private:
+    std::vector<std::function<void()>*> m_functions;
+};
 
 #endif // __EVENTS_H_

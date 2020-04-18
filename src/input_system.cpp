@@ -4,6 +4,7 @@
 #include <functional>
 #include "platform/log.h"
 
+
 void InputSystem::init() {
     m_startframe = std::bind(&InputSystem::on_update, this, std::placeholders::_1);
 }
@@ -20,18 +21,25 @@ void InputSystem::on_disable() {
     event->unregister_handler(&m_startframe);
 }
 
+void quit(){
+    log_info("Quit called!");
+    auto em = ecs::get_event_manager();
+    auto sd = em->get_event<ShutdownEvent>();
+    sd->invoke();
+}
+
 void InputSystem::on_update(float deltaTime) {
 
     SDL_WaitEvent(&m_event);
 
     switch(m_event.type){
         case SDL_QUIT:
-            std::abort();
+            quit();
             break;
         case SDL_KEYDOWN:
             switch(m_event.key.keysym.sym) {
                 case SDLK_ESCAPE:
-                    std::abort();
+                    quit();
                     break;
             }
             break;
