@@ -123,10 +123,29 @@ void UISystem::on_render() {
 
     auto unit = em->get_component<Unit>(m_selected_entity);
 
-    if(unit == nullptr)
-        return;
+    if(unit == nullptr){
+        auto building = em->get_component<Building>(m_selected_entity);
 
-    rend->draw(unit->down_texture, glm::vec2(10.0f, screen_height() - unit->height));
+        if(building == nullptr)
+            return;
+
+        rend->draw(building->animation_frames[building->current_frame], glm::vec2(10.0f, screen_height() - building->height));
+
+        switch(building->type){
+            case BUILDING_Monster:
+                rend->draw_text(m_font, "Grrr...bring me more burgers!", glm::vec2(250.0f, screen_height() - 75.0f));
+                break;
+            case BUILDING_Burger:
+                render_bar(175.0f, screen_height() - 75.0f, "Burgers Left", 0.75f, BAR_Green);
+                break;
+        }
+    }else{
+        rend->draw(unit->down_texture, glm::vec2(10.0f, screen_height() - unit->height));
+
+
+    }
+
+
 }
 
 void UISystem::on_unit_select(unsigned int entity){

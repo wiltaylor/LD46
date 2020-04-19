@@ -17,6 +17,8 @@ public:
 
     bool on_mousedown(int x, int y, int button);
     bool on_mouseup(int x, int y, int button);
+    void on_targeted(unsigned int entity);
+    void on_selected(unsigned int entity);
 
 private:
     std::function<void()> m_render_event;
@@ -24,5 +26,9 @@ private:
 
     std::function<bool(int,int,int)> m_mousedown_event;
     std::function<bool(int,int,int)> m_mouseup_event;
+    std::function<void(unsigned int)> m_targeted_event;
+    std::function<void(unsigned int)> m_selected_event;
+
+    unsigned int m_selected_unit = 0;
 };
 #endif //LD46_UNIT_SYSTEM_H

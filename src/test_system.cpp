@@ -63,8 +63,9 @@ void TestSystem::init() {
     building->hp_recovery = 0.01f;
     building->animation_speed = 2.0f;
     building->current_frame = 0;
-    building->width = 256;
-    building->height = 256;
+    building->width = 200;
+    building->height = 200;
+    building->type = BUILDING_Monster;
 
     monster_trans->position.x = 20.0f;
     monster_trans->position.y = 20.0f;
@@ -83,8 +84,9 @@ void TestSystem::init() {
     burger_building->current_frame = 0;
     burger_building->width = 128;
     burger_building->height = 128;
+    burger_building->type = BUILDING_Burger;
 
-    burger_trans->position.x = 200.0f;
+    burger_trans->position.x = 800.0f;
     burger_trans->position.y = 200.0f;
 
     auto bob = ent->add_entity();
@@ -99,7 +101,9 @@ void TestSystem::init() {
     bob_unit->direction = UNIT_DOWN;
     bob_unit->width = 64;
     bob_unit->height = 64;
-    bob_unit->speed = 20.0f;
+    bob_unit->speed = 40.0f;
+    bob_unit->type = UNIT_Cultist;
+    bob_unit->hide = false;
 
     bob_trans->position.x = 600.0f;
     bob_trans->position.y = 200.0f;
@@ -107,6 +111,7 @@ void TestSystem::init() {
     bob_ai->target.x = 900;
     bob_ai->target.y = 600;
     bob_ai->state = AI_MOVE;
+    bob_ai->hide_timeout = 5.0f;
 
     log_info("starting to load tilemap");
 

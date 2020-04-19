@@ -35,6 +35,11 @@ struct TileMap: public ecs::Component<TileMap> {
     std::vector<tile> data;
 };
 
+enum BuildingType{
+    BUILDING_Monster,
+    BUILDING_Burger
+};
+
 struct Building: public ecs::Component<Building> {
     std::vector<unsigned int> animation_frames;
     float hp;
@@ -45,6 +50,7 @@ struct Building: public ecs::Component<Building> {
     unsigned int current_frame;
     int width;
     int height;
+    BuildingType type;
 };
 
 enum UnitDirection{
@@ -52,6 +58,12 @@ enum UnitDirection{
     UNIT_DOWN,
     UNIT_LEFT,
     UNIT_RIGHT
+};
+
+enum UnitType{
+    UNIT_Cultist,
+    UNIT_Wizard,
+    UNIT_Enemy
 };
 
 struct Unit: public ecs::Component<Unit> {
@@ -63,18 +75,24 @@ struct Unit: public ecs::Component<Unit> {
     int width;
     int height;
     float speed;
+    UnitType type;
+    bool hide;
 };
 
 enum AIState {
     AI_IDLE,
     AI_MOVE,
     AI_GATHER,
-    AI_RETURN
+    AI_RETURN,
+    AI_WAITING_ON_ORDER
 };
 
 struct UnitAI : public ecs::Component<UnitAI> {
     glm::vec2 target;
     AIState state;
+    float hide_timeout;
+    float current_hide;
+    unsigned int harvest_entity;
 };
 
 struct Collider: public ecs::Component<Collider> {
