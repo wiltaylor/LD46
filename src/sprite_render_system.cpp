@@ -36,7 +36,7 @@ void SpriteRenderSystem::on_render(){
 
     while(it != nullptr){
 
-        auto transformId = entm->get_component<Transform2D>(it->Entity);
+        auto transformId = entm->get_component_index<Transform2D>(it->Entity);
         if(transformId != nullptr){
             auto trans = cm->get_component<Transform2D>(*transformId);
             m_renderer->draw(it->AssetId, trans->position);

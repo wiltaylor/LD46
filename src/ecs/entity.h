@@ -35,7 +35,18 @@ namespace ecs{
         }
 
         template<typename T>
-        GenerativeIndex* get_component(unsigned int entity){
+        T* get_component(unsigned int entity){
+            auto index = this->get_component_index<T>(entity);
+
+            if(index == nullptr)
+                return nullptr;
+            auto cm = get_component_manager();
+
+            return cm->get_component<T>(*index);
+        }
+
+        template<typename T>
+        GenerativeIndex* get_component_index(unsigned int entity){
             auto it = m_components.find(entity);
 
             if(it == m_components.end())

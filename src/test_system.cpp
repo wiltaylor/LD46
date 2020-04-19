@@ -29,6 +29,14 @@ void TestSystem::init() {
     cmp->register_component_type<Camera2D>(1);
     cmp->register_component_type<TileMap>(1);
 
+
+    auto cam = ent->add_entity();
+    auto camcomp = ent->add_component<Camera2D>(cam);
+    camcomp->position.x = 0.0f;
+    camcomp->position.y = 0.0f;
+    camcomp->width = 900.0f;
+    camcomp->height = 600.0f;
+
     auto e = ent->add_entity();
 
     auto trans = ent->add_component<Transform2D>(e);
@@ -49,8 +57,8 @@ void TestSystem::init() {
     log_info("doot");
 
     tm->Texture = tile_id;
-    tm->Width = 10;
-    tm->Height = 10;
+    tm->Width = 1000;
+    tm->Height = 1000;
     tm->TileWidth = 32;
     tm->TileHeight = 32;
     tm->TextureWidth = 512;
@@ -68,8 +76,6 @@ void TestSystem::init() {
    
     log_info("Finished loading tilemap");
 }
-
-
 
 void TestSystem::on_enable() {
     auto em = ecs::get_event_manager();

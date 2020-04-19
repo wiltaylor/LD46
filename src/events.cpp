@@ -90,5 +90,57 @@ void ShutdownEvent::invoke(){
 
         func();
     }
+}
 
+void MouseDownEvent::register_handler(std::function<bool(int,int,int)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void MouseDownEvent::unregister_handler(std::function<bool(int,int,int) >* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void MouseDownEvent::invoke(int x, int y, int button){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        if(func(x, y, button))
+            return; //If handled don't process rest.
+    }
+}
+
+void MouseUpEvent::register_handler(std::function<bool(int, int, int)>* handler) {
+m_functions.push_back(handler);
+}
+
+void MouseUpEvent::unregister_handler(std::function<bool(int, int, int) >* handler){
+m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void MouseUpEvent::invoke(int x, int y, int button){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        if(func(x, y, button))
+            return; //If handled don't process rest.
+    }
+}
+
+void TileSelected::register_handler(std::function<void(int,int,int)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void TileSelected::unregister_handler(std::function<void(int,int,int) >* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void TileSelected::invoke(int x, int y, int button){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(x, y, button);
+    }
 }

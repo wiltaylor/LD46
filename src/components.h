@@ -16,7 +16,9 @@ struct SpriteRenderer: public ecs::Component<SpriteRenderer>{
 };
 
  struct Camera2D: public ecs::Component<Camera2D> {
-    glm::mat2 boundingbox;
+    glm::vec2 position;
+    float width;
+    float height;
 };
 
 struct TileMap: public ecs::Component<TileMap> {

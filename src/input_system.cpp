@@ -30,11 +30,42 @@ void quit(){
 
 void InputSystem::on_update(float deltaTime) {
 
-    SDL_WaitEvent(&m_event);
+    static bool mouse_left_down = false;
+    static bool mouse_right_down = false;
+
+    SDL_PollEvent(&m_event);
 
     switch(m_event.type){
         case SDL_QUIT:
             quit();
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if(m_event.button.button == SDL_BUTTON_LEFT && !mouse_left_down) {
+                auto em = ecs::get_event_manager();
+                auto event = em->get_event<MouseDownEvent>();
+                event->invoke(m_event.button.x, m_event.button.y, 0);
+                mouse_left_down = true;
+            }
+            if(m_event.button.button == SDL_BUTTON_RIGHT && !mouse_right_down) {
+                auto em = ecs::get_event_manager();
+                auto event = em->get_event<MouseDownEvent>();
+                event->invoke(m_event.button.x, m_event.button.y, 1);
+                mouse_right_down = true;
+            }
+            break;
+        case SDL_MOUSEBUTTONUP:
+            if(m_event.button.button == SDL_BUTTON_LEFT && mouse_left_down) {
+                auto em = ecs::get_event_manager();
+                auto event = em->get_event<MouseUpEvent>();
+                event->invoke(m_event.button.x, m_event.button.y, 0);
+                mouse_left_down = false;
+            }
+            if(m_event.button.button == SDL_BUTTON_RIGHT && mouse_right_down) {
+                auto em = ecs::get_event_manager();
+                auto event = em->get_event<MouseUpEvent>();
+                event->invoke(m_event.button.x, m_event.button.y, 1);
+                mouse_right_down = false;
+            }
             break;
         case SDL_KEYDOWN:
             switch(m_event.key.keysym.sym) {

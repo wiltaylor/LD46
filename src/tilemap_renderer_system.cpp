@@ -5,9 +5,14 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include "tilemap.h"
+#include <assert.h>
+#include "coords.h"
 
 void TileMapRendererSystem::init(){
     m_render_event = std::bind(&TileMapRendererSystem::on_render, this);
+    m_mousedown_event = std::bind(&TileMapRendererSystem::on_mousedown, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    m_mouseup_event = std::bind(&TileMapRendererSystem::on_mouseup, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+
     m_renderer = get_renderer();
 
     std::cout << "loaded tilemap renderer\n";
@@ -17,13 +22,76 @@ void TileMapRendererSystem::on_enable(){
     auto em = ecs::get_event_manager();
     auto event = em->get_event<RenderEvent>();
     event->register_handler(&m_render_event);
-   
+
+    auto mouseup_event = em->get_event<MouseUpEvent>();
+    mouseup_event->register_handler(&m_mouseup_event);
+
+    auto mousedown_event = em->get_event<MouseDownEvent>();
+    mousedown_event->register_handler(&m_mousedown_event);
 }
 
 void TileMapRendererSystem::on_disable(){
     auto em = ecs::get_event_manager();
     auto event = em->get_event<RenderEvent>();
     event->unregister_handler(&m_render_event);
+
+    auto mouseup_event = em->get_event<MouseUpEvent>();
+    mouseup_event->unregister_handler(&m_mouseup_event);
+
+    auto mousedown_event = em->get_event<MouseDownEvent>();
+    mousedown_event->unregister_handler(&m_mousedown_event);
+}
+
+bool TileMapRendererSystem::on_mousedown(int x, int y, int button) {
+    auto cm = ecs::get_component_manager();
+    auto ent = ecs::get_entity_manager();
+
+    cm->begin<Camera2D>();
+    auto cam = cm->next<Camera2D>();
+    assert(cam != nullptr);
+
+    cm->begin<TileMap>();
+
+    auto it = cm->next<TileMap>();
+
+    while(it != nullptr){
+
+        auto trans = ent->get_component<Transform2D>(it->Entity);
+
+        auto top_left = world_to_screen(trans->position);
+        auto click_spot = world_to_local(screen_to_world(glm::vec2(x, y)), trans->position);
+
+        if(trans != nullptr){
+            if(top_left.x > screen_width())
+                continue;
+
+            if(top_left.y > screen_height())
+                continue;
+
+            if(top_left.x + it->Width * it->TileWidth < 0)
+                continue;
+
+            if(top_left.y + it->Height * it->TileHeight < 0)
+                continue;
+
+            int x_tile = click_spot.x / it->TileWidth;
+            int y_tile = click_spot.y / it->TileWidth;
+
+            std::cout << "Tile clicked " << x_tile << "/" << y_tile << "\n";
+            return true;
+        }
+
+        it = cm->next<TileMap>();
+    }
+
+    auto em = ecs::get_event_manager();
+    auto event = em->get_event<TileSelected>();
+
+    return false;
+}
+
+bool TileMapRendererSystem::on_mouseup(int x, int y, int button) {
+    return false;
 }
 
 void TileMapRendererSystem::on_render() {
@@ -35,19 +103,28 @@ void TileMapRendererSystem::on_render() {
     auto it = cm->next<TileMap>();
 
     while(it != nullptr){
-        auto transformid = ent->get_component<Transform2D>(it->Entity);
-
         int tiles_per_row = it->TextureWidth / it->TileWidth;
         int tiles_per_col = it->TextureHeight / it->TileHeight;
 
-        if(transformid != nullptr){
-            auto trans = cm->get_component<Transform2D>(*transformid);
+        auto trans = ent->get_component<Transform2D>(it->Entity);
+        if(trans != nullptr){
+            glm::vec2 top_corner = world_to_screen(trans->position);
 
-            std::cout << "bang1\n";
             for(unsigned int x = 0; x < it->Width; x++){
-                for(unsigned int y = 0; y < it->Height; y++){
-                    std::cout << "bang bang\n";
 
+                if(top_corner.x + x * it->TileWidth < 0)
+                    continue;
+
+                if(top_corner.x + x * it->TileWidth > top_corner.x + screen_width())
+                    continue;
+
+                for(unsigned int y = 0; y < it->Height; y++){
+
+                    if(top_corner.y + y * it->TileHeight < 0 )
+                        continue;
+
+                    if(top_corner.y + y * it->TileWidth > top_corner.y + screen_height())
+                        continue;
 
                     tile* tile = &it->data[y * it->Height + x];
 
@@ -62,16 +139,14 @@ void TileMapRendererSystem::on_render() {
                     src.width = it->TileWidth;
                     src.height = it->TileHeight;
 
-                    dst.x = trans->position.x + x * it->TileWidth;
-                    dst.y = trans->position.y + y * it->TileHeight;
+                    dst.x = top_corner.x + x * it->TileWidth;
+                    dst.y = top_corner.y + y * it->TileHeight;
                     dst.width = it->TileWidth;
                     dst.height = it->TileHeight;
 
                     m_renderer->draw(it->Texture, src, dst);
                 }
             }
-
-//            m_renderer->draw(it->Texture, trans->position);
         }
         it = cm->next<TileMap>();
         break;

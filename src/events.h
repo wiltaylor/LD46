@@ -3,6 +3,7 @@
 #include "ecs/event.h"
 #include <functional>
 #include <vector>
+#include <glm/glm.hpp>
 
 void register_all_events();
 
@@ -60,4 +61,34 @@ private:
     std::vector<std::function<void()>*> m_functions;
 };
 
+class MouseDownEvent: public ecs::Event<MouseDownEvent> {
+public:
+    void register_handler(std::function<bool(int,int,int)>* handler);
+    void unregister_handler(std::function<bool(int,int,int)>* handler);
+    void invoke(int x, int y, int button);
+
+private:
+    std::vector<std::function<bool(int, int, int)>*> m_functions;
+};
+
+
+class MouseUpEvent: public ecs::Event<MouseUpEvent> {
+public:
+    void register_handler(std::function<bool(int,int,int)>* handler);
+    void unregister_handler(std::function<bool(int,int,int)>* handler);
+    void invoke(int x, int y, int button);
+
+private:
+    std::vector<std::function<bool(int,int,int)>*> m_functions;
+};
+
+class TileSelected: public ecs::Event<TileSelected> {
+public:
+    void register_handler(std::function<void(int, int, int)>* handler);
+    void unregister_handler(std::function<void(int, int, int)>* handler);
+    void invoke(int x, int y, int button);
+
+private:
+    std::vector<std::function<void(int, int, int)>*> m_functions;
+};
 #endif // __EVENTS_H_
