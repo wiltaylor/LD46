@@ -64,6 +64,7 @@ private:
 class MouseDownEvent: public ecs::Event<MouseDownEvent> {
 public:
     void register_handler(std::function<bool(int,int,int)>* handler);
+    void register_handler_priority(std::function<bool(int,int,int)>* handler);
     void unregister_handler(std::function<bool(int,int,int)>* handler);
     void invoke(int x, int y, int button);
 
@@ -75,6 +76,7 @@ private:
 class MouseUpEvent: public ecs::Event<MouseUpEvent> {
 public:
     void register_handler(std::function<bool(int,int,int)>* handler);
+    void register_handler_priority(std::function<bool(int,int,int)>* handler);
     void unregister_handler(std::function<bool(int,int,int)>* handler);
     void invoke(int x, int y, int button);
 

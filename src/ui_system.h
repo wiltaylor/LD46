@@ -6,6 +6,12 @@
 #include <functional>
 #include "platform/renderer.h"
 
+enum BarColor {
+    BAR_Red,
+    BAR_Green,
+    BAR_Power
+};
+
 class UISystem: public ecs::System<UISystem>{
 public:
     UISystem() {}
@@ -15,10 +21,21 @@ public:
     void on_disable() override;
     void on_render();
 
+    bool on_mousedown(int x, int y, int button);
+    bool on_mouseup(int x, int y, int button);
+
 private:
+    void render_bar(float x, float y, const char* text, float percent, BarColor color);
+
     std::function<void()> m_render_event;
+    std::function<bool(int,int,int)> m_mousedown_event;
+    std::function<bool(int,int,int)> m_mouseup_event;
+
     unsigned int m_ui_sprite;
-    unsigned int m_emptybar_sprite;
+    unsigned int m_ui_bar_empty;
+    unsigned int m_ui_bar_red;
+    unsigned int m_ui_bar_green;
+    unsigned int m_ui_bar_power;
     unsigned int m_font;
 };
 #endif //LD46_UI_SYSTEM_H

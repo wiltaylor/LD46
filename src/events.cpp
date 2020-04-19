@@ -96,6 +96,10 @@ void MouseDownEvent::register_handler(std::function<bool(int,int,int)>* handler)
     m_functions.push_back(handler);
 }
 
+void MouseDownEvent::register_handler_priority(std::function<bool(int,int,int)>* handler){
+    m_functions.insert(m_functions.begin(), handler);
+}
+
 void MouseDownEvent::unregister_handler(std::function<bool(int,int,int) >* handler){
     m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
 }
@@ -112,6 +116,10 @@ void MouseDownEvent::invoke(int x, int y, int button){
 
 void MouseUpEvent::register_handler(std::function<bool(int, int, int)>* handler) {
 m_functions.push_back(handler);
+}
+
+void MouseUpEvent::register_handler_priority(std::function<bool(int,int,int)>* handler){
+    m_functions.insert(m_functions.begin(), handler);
 }
 
 void MouseUpEvent::unregister_handler(std::function<bool(int, int, int) >* handler){
