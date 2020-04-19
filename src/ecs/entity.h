@@ -32,7 +32,6 @@ namespace ecs{
             m_components[entity]->push_back(index);
 
             return cm->get_component<T>(index);
-
         }
 
         template<typename T>

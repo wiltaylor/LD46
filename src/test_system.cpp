@@ -7,6 +7,7 @@
 #include "components.h"
 #include "platform/asset.h"
 #include <iostream>
+#include <stdlib.h>
 
 void TestSystem::init() {
 
@@ -19,11 +20,14 @@ void TestSystem::init() {
 
     auto assetman =get_asset_manager();
 
-    assetman->get_texture_asset("test.png", Global);
+    auto sprite_id = assetman->get_texture_asset("assets/test.png", Global);
+    auto tile_id = assetman->get_texture_asset("assets/tilemap.png", Global);
+
 
     cmp->register_component_type<Transform2D>(100);
     cmp->register_component_type<SpriteRenderer>(100);
     cmp->register_component_type<Camera2D>(1);
+    cmp->register_component_type<TileMap>(1);
 
     auto e = ent->add_entity();
 
@@ -33,7 +37,36 @@ void TestSystem::init() {
     trans->position.x = 50.0f;
     trans->position.y = 0.0f;
     trans->rotation = 0.0f;
+
+    sprite->AssetId = sprite_id;
+
+    log_info("starting to load tilemap");
+
+    auto tment = ent->add_entity();
+    auto tm = ent->add_component<TileMap>(tment);
+    auto ttran = ent->add_component<Transform2D>(tment);
+
+    log_info("doot");
+
+    tm->Texture = tile_id;
+    tm->Width = 10;
+    tm->Height = 10;
+    tm->TileWidth = 32;
+    tm->TileHeight = 32;
+    tm->TextureWidth = 512;
+    tm->TextureHeight = 512;
+
+    ttran->position.x = 0.0f;
+    ttran->position.y = 0.0f;
+    ttran->rotation = 0.0f;
+
+    for(auto i = 0; i < tm->Width * tm->Height; i++){
+        tm->data.push_back(tile{0, false});
+    }
+
+    tm->data[2].tiletype = 1;
    
+    log_info("Finished loading tilemap");
 }
 
 

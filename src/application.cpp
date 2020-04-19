@@ -7,6 +7,7 @@
 #include "platform/log.h"
 #include "test_system.h"
 #include "sprite_render_system.h"
+#include "tilemap_renderer_system.h"
 
 Application::Application(){
     log_info("Application starting up...");
@@ -28,12 +29,14 @@ Application::Application(){
     sm->register_system<InputSystem>();
     sm->register_system<TestSystem>();
     sm->register_system<SpriteRenderSystem>();
+    sm->register_system<TileMapRendererSystem>();
 
     log_info("Enabling systems");
     sm->enable<RenderSystem>();
     sm->enable<InputSystem>();
     sm->enable<TestSystem>();
     sm->enable<SpriteRenderSystem>();
+    sm->enable<TileMapRendererSystem>();
 }
 
 void Application::onExit(){

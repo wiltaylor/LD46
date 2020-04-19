@@ -63,10 +63,29 @@ void SDLRenderer::draw(unsigned int resource_id, glm::vec2 position) {
     SDL_RenderCopy(m_renderer, text->raw, nullptr, &dest);
 }
 
-void SDLRenderer::draw(unsigned int resource_id, glm::mat2 srcRect, glm::mat2 destRect) {
+void SDLRenderer::draw(unsigned int resource_id, Rectangle srcRect, Rectangle destRect) {
 
+    if(m_assetman == nullptr)
+        m_assetman = reinterpret_cast<SDLAssetManager*>(get_asset_manager());
+
+    auto text = m_assetman->get_texture(resource_id);
+
+    SDL_Rect src;
+    SDL_Rect dest;
+
+    src.x = srcRect.x;
+    src.y = srcRect.y;
+    src.w = srcRect.width;
+    src.h = srcRect.height;
+
+    dest.x = destRect.x;
+    dest.y = destRect.y;
+    dest.w = destRect.width;
+    dest.h = destRect.height;
+
+    SDL_RenderCopy(m_renderer, text->raw, &src, &dest);
 }
 
-void SDLRenderer::draw(unsigned int resource_id, glm::mat2 srcRect, glm::mat2 destRect, glm::vec2 center, float angle) {
+void SDLRenderer::draw(unsigned int resource_id, Rectangle srcRect, Rectangle destRect, glm::vec2 center, float angle) {
    
 }

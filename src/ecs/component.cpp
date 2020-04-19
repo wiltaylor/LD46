@@ -78,6 +78,8 @@ ecs::GenerativeIndex ecs::ComponentContainer::add_component(unsigned int entity)
 
             return ecs::GenerativeIndex{ index, m_generation[index], m_type_id };
         }
+
+        index++;
     }
 
     size_t new_capacity = m_capacity * 2;
