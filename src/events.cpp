@@ -152,3 +152,37 @@ void TileSelected::invoke(int x, int y, int button){
         func(x, y, button);
     }
 }
+
+void UnitSelected::register_handler(std::function<void(unsigned int)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void UnitSelected::unregister_handler(std::function<void(unsigned int)>* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void UnitSelected::invoke(unsigned int entity){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(entity);
+    }
+}
+
+void UnitTargeted::register_handler(std::function<void(unsigned int)>* handler) {
+m_functions.push_back(handler);
+}
+
+void UnitTargeted::unregister_handler(std::function<void(unsigned int)>* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void UnitTargeted::invoke(unsigned int entity){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(entity);
+    }
+}

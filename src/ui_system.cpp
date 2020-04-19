@@ -1,11 +1,16 @@
 #include "ui_system.h"
 #include "platform/asset.h"
+#include "ecs/entity.h"
+#include "coords.h"
+#include <iostream>
 
 void UISystem::init(){
     m_render_event = std::bind(&UISystem::on_render, this);
 
     m_mousedown_event = std::bind(&UISystem::on_mousedown, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     m_mouseup_event = std::bind(&UISystem::on_mouseup, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+
+    m_unit_select_event = std::bind(&UISystem::on_unit_select, this, std::placeholders::_1);
 
     auto assetman =get_asset_manager();
     m_ui_sprite = assetman->get_texture_asset("assets/mainscreen.png", Global);
@@ -15,6 +20,7 @@ void UISystem::init(){
     m_ui_bar_power = assetman->get_texture_asset("assets/full_bar_power.png", Global);
     m_font = assetman->get_font_asset("assets/ThatNogoFontCasual.ttf", 25, Global);
 
+    m_selected_entity = 0;
 }
 
 void UISystem::on_enable() {
@@ -23,9 +29,12 @@ void UISystem::on_enable() {
     auto event = em->get_event<RenderEvent>();
     auto mouseup_event = em->get_event<MouseUpEvent>();
     auto mousedown_event = em->get_event<MouseDownEvent>();
+    auto unit_selected_event = em->get_event<UnitSelected>();
+
     event->register_handler(&m_render_event);
     mouseup_event->register_handler_priority(&m_mouseup_event);
     mousedown_event->register_handler_priority(&m_mousedown_event);
+    unit_selected_event->register_handler(&m_unit_select_event);
 }
 
 void UISystem::on_disable(){
@@ -34,9 +43,12 @@ void UISystem::on_disable(){
     auto event = em->get_event<RenderEvent>();
     auto mouseup_event = em->get_event<MouseUpEvent>();
     auto mousedown_event = em->get_event<MouseDownEvent>();
+    auto unit_selected_event = em->get_event<UnitSelected>();
+
     event->unregister_handler(&m_render_event);
     mouseup_event->unregister_handler(&m_mouseup_event);
     mousedown_event->unregister_handler(&m_mousedown_event);
+    unit_selected_event->unregister_handler(&m_unit_select_event);
 }
 
 bool UISystem::on_mousedown(int x, int y, int button){
@@ -106,4 +118,19 @@ void UISystem::on_render() {
     render_bar(10.0f, 10.0f, "Hunger", 0.25f, BAR_Red);
     render_bar(250.0f, 10.0f, "HP", 1.0f, BAR_Green);
     render_bar(500.0f, 10.0f, "Power", 0.9f, BAR_Power);
+
+    auto em = ecs::get_entity_manager();
+
+    auto unit = em->get_component<Unit>(m_selected_entity);
+
+    if(unit == nullptr)
+        return;
+
+    rend->draw(unit->down_texture, glm::vec2(10.0f, screen_height() - unit->height));
+}
+
+void UISystem::on_unit_select(unsigned int entity){
+    m_selected_entity = entity;
+
+    std::cout << "Selected!!@!\n";
 }

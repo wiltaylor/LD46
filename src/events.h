@@ -93,4 +93,25 @@ public:
 private:
     std::vector<std::function<void(int, int, int)>*> m_functions;
 };
+
+class UnitSelected: public ecs::Event<UnitSelected> {
+public:
+    void register_handler(std::function<void(unsigned int)>* handler);
+    void unregister_handler(std::function<void(unsigned int)>* handler);
+    void invoke(unsigned int entity);
+
+private:
+    std::vector<std::function<void(unsigned int)>*> m_functions;
+};
+
+
+class UnitTargeted: public ecs::Event<UnitTargeted> {
+public:
+    void register_handler(std::function<void(unsigned int)>* handler);
+    void unregister_handler(std::function<void(unsigned int)>* handler);
+    void invoke(unsigned int entity);
+
+private:
+    std::vector<std::function<void(unsigned int)>*> m_functions;
+};
 #endif // __EVENTS_H_

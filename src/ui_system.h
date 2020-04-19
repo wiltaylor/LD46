@@ -23,6 +23,7 @@ public:
 
     bool on_mousedown(int x, int y, int button);
     bool on_mouseup(int x, int y, int button);
+    void on_unit_select(unsigned int entity);
 
 private:
     void render_bar(float x, float y, const char* text, float percent, BarColor color);
@@ -30,6 +31,7 @@ private:
     std::function<void()> m_render_event;
     std::function<bool(int,int,int)> m_mousedown_event;
     std::function<bool(int,int,int)> m_mouseup_event;
+    std::function<void(unsigned int)> m_unit_select_event;
 
     unsigned int m_ui_sprite;
     unsigned int m_ui_bar_empty;
@@ -37,5 +39,6 @@ private:
     unsigned int m_ui_bar_green;
     unsigned int m_ui_bar_power;
     unsigned int m_font;
+    unsigned int m_selected_entity;
 };
 #endif //LD46_UI_SYSTEM_H
