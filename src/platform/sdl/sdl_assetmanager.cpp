@@ -23,7 +23,7 @@ unsigned int SDLAssetManager::get_texture_asset(const char* name, AssetPersistan
     auto it = m_idlookup.find(name);
 
     if(it == m_idlookup.end()){
-        log_info("Loading file from disk!");
+        log_info("Loading texture from disk!");
 
         auto id = next_id++;
         SDLTexture new_text{IMG_LoadTexture(m_renderer, name), persist, 0, 0, 0, 0};
@@ -32,6 +32,25 @@ unsigned int SDLAssetManager::get_texture_asset(const char* name, AssetPersistan
 
         m_idlookup.insert(std::pair<const char*, unsigned int>(name, id));
         m_textures.insert(std::pair<unsigned int, SDLTexture>(id, new_text));
+
+        return id;
+    }else{
+        return it->second;
+    }
+}
+
+unsigned int SDLAssetManager::get_font_asset(const char* name, int size, AssetPersistance persist) {
+    auto it = m_idlookup.find(name);
+
+    if(it == m_idlookup.end()){
+        log_info("Loading font from disk!");
+
+        auto id = next_id++;
+
+        SDLFont new_font{TTF_OpenFont(name, size), size};
+
+        m_idlookup.insert(std::pair<const char*, unsigned int>(name, id));
+        m_fonts.insert(std::pair<unsigned int, SDLFont>(id, new_font));
 
         return id;
     }else{
@@ -51,6 +70,15 @@ SDLTexture* SDLAssetManager::get_texture(unsigned int id){
     auto it = m_textures.find(id) ;
 
     if(it == m_textures.end())
+        return nullptr;
+
+    return &it->second;
+}
+
+SDLFont* SDLAssetManager::get_font(unsigned int id){
+    auto it = m_fonts.find(id);
+
+    if(it == m_fonts.end())
         return nullptr;
 
     return &it->second;

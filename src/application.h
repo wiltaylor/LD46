@@ -21,5 +21,6 @@ private:
     std::function<void()> m_exitHandler;
 };
 
+float deltaTime();
 
 #endif // __APPLICATION_H_

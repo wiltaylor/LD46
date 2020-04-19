@@ -20,15 +20,25 @@ void TestSystem::init() {
 
     auto assetman =get_asset_manager();
 
-    auto sprite_id = assetman->get_texture_asset("assets/test.png", Global);
     auto tile_id = assetman->get_texture_asset("assets/tilemap.png", Global);
+    auto worker_up_id = assetman->get_texture_asset("assets/worker_up.png", Global);
+    auto worker_down_id = assetman->get_texture_asset("assets/worker_down.png", Global);
+    auto worker_left_id = assetman->get_texture_asset("assets/worker_left.png", Global);
+    auto worker_right_id = assetman->get_texture_asset("assets/worker_right.png", Global);
 
+    auto monster1_id = assetman->get_texture_asset("assets/monster_frame1.png", Global);
+    auto monster2_id = assetman->get_texture_asset("assets/monster_frame2.png", Global);
+
+    auto burger_id = assetman->get_texture_asset("assets/burger_building.png", Global);
 
     cmp->register_component_type<Transform2D>(100);
     cmp->register_component_type<SpriteRenderer>(100);
     cmp->register_component_type<Camera2D>(1);
     cmp->register_component_type<TileMap>(1);
-
+    cmp->register_component_type<Building>(20);
+    cmp->register_component_type<Collider>(100);
+    cmp->register_component_type<Unit>(100);
+    cmp->register_component_type<UnitAI>(100);
 
     auto cam = ent->add_entity();
     auto camcomp = ent->add_component<Camera2D>(cam);
@@ -36,17 +46,67 @@ void TestSystem::init() {
     camcomp->position.y = 0.0f;
     camcomp->width = 900.0f;
     camcomp->height = 600.0f;
+    camcomp->max_position.x = 32 * 100 - 900.0f;
+    camcomp->max_position.y = 32 * 100 - 600.0f;
+    camcomp->min_position.x = 0.0f;
+    camcomp->min_position.y = 0.0f;
+    camcomp->scroll_speed = 500.0f;
 
-    auto e = ent->add_entity();
+    auto monster = ent->add_entity();
+    auto building = ent->add_component<Building>(monster);
+    auto monster_trans = ent->add_component<Transform2D>(monster);
 
-    auto trans = ent->add_component<Transform2D>(e);
-    auto sprite = ent->add_component<SpriteRenderer>(e);
+    building->animation_frames.push_back(monster1_id);
+    building->animation_frames.push_back(monster2_id);
+    building->hp = 100.0f;
+    building->max_hp = 100.0f;
+    building->hp_recovery = 0.01f;
+    building->animation_speed = 2.0f;
+    building->current_frame = 0;
+    building->width = 256;
+    building->height = 256;
 
-    trans->position.x = 50.0f;
-    trans->position.y = 0.0f;
-    trans->rotation = 0.0f;
+    monster_trans->position.x = 20.0f;
+    monster_trans->position.y = 20.0f;
 
-    sprite->AssetId = sprite_id;
+
+    auto burger_joint = ent->add_entity();
+    auto burger_building = ent->add_component<Building>(burger_joint);
+    auto burger_trans = ent->add_component<Transform2D>(burger_joint);
+
+    burger_building->animation_frames.push_back(burger_id);
+
+    burger_building->hp = 100.0f;
+    burger_building->max_hp = 100.0f;
+    burger_building->hp_recovery = 0.1f;
+    burger_building->animation_speed = -1.0f;
+    burger_building->current_frame = 0;
+    burger_building->width = 128;
+    burger_building->height = 128;
+
+    burger_trans->position.x = 200.0f;
+    burger_trans->position.y = 200.0f;
+
+    auto bob = ent->add_entity();
+    auto bob_unit = ent->add_component<Unit>(bob);
+    auto bob_trans = ent->add_component<Transform2D>(bob);
+    auto bob_ai = ent->add_component<UnitAI>(bob);
+
+    bob_unit->up_texture = worker_up_id;
+    bob_unit->down_texture = worker_down_id;
+    bob_unit->left_texture = worker_left_id;
+    bob_unit->right_texture = worker_right_id;
+    bob_unit->direction = UNIT_DOWN;
+    bob_unit->width = 64;
+    bob_unit->height = 64;
+    bob_unit->speed = 20.0f;
+
+    bob_trans->position.x = 600.0f;
+    bob_trans->position.y = 200.0f;
+
+    bob_ai->target.x = 900;
+    bob_ai->target.y = 600;
+    bob_ai->state = AI_MOVE;
 
     log_info("starting to load tilemap");
 
@@ -57,8 +117,8 @@ void TestSystem::init() {
     log_info("doot");
 
     tm->Texture = tile_id;
-    tm->Width = 1000;
-    tm->Height = 1000;
+    tm->Width = 100;
+    tm->Height = 100;
     tm->TileWidth = 32;
     tm->TileHeight = 32;
     tm->TextureWidth = 512;
@@ -73,6 +133,7 @@ void TestSystem::init() {
     }
 
     tm->data[2].tiletype = 1;
+    tm->data[99].tiletype = 2;
    
     log_info("Finished loading tilemap");
 }

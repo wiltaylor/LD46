@@ -8,6 +8,15 @@
 #include "test_system.h"
 #include "sprite_render_system.h"
 #include "tilemap_renderer_system.h"
+#include "building_system.h"
+#include "unit_system.h"
+#include "ui_system.h"
+
+static float current_delta_time;
+
+float deltaTime() {
+    return current_delta_time;
+}
 
 Application::Application(){
     log_info("Application starting up...");
@@ -30,6 +39,9 @@ Application::Application(){
     sm->register_system<TestSystem>();
     sm->register_system<SpriteRenderSystem>();
     sm->register_system<TileMapRendererSystem>();
+    sm->register_system<BuildingSystem>();
+    sm->register_system<UnitSystem>();
+    sm->register_system<UISystem>();
 
     log_info("Enabling systems");
     sm->enable<RenderSystem>();
@@ -37,6 +49,9 @@ Application::Application(){
     sm->enable<TestSystem>();
     sm->enable<SpriteRenderSystem>();
     sm->enable<TileMapRendererSystem>();
+    sm->enable<BuildingSystem>();
+    sm->enable<UnitSystem>();
+    sm->enable<UISystem>();
 }
 
 void Application::onExit(){
@@ -50,6 +65,7 @@ Application::~Application(){
 }
 
 bool Application::onTick(float deltaTime){
+    current_delta_time = deltaTime;
     m_startFrame->invoke(deltaTime);
 
     m_startRender->invoke();

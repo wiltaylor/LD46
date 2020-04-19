@@ -101,6 +101,8 @@ void TileMapRendererSystem::on_render() {
     cm->begin<TileMap>();
 
     auto it = cm->next<TileMap>();
+    float tile_start_x = (float)it->TileWidth * -1;
+    float tile_start_y = (float)it->TileHeight * -1;
 
     while(it != nullptr){
         int tiles_per_row = it->TextureWidth / it->TileWidth;
@@ -112,18 +114,18 @@ void TileMapRendererSystem::on_render() {
 
             for(unsigned int x = 0; x < it->Width; x++){
 
-                if(top_corner.x + x * it->TileWidth < 0)
+                if(top_corner.x + x * it->TileWidth < tile_start_x)
                     continue;
 
-                if(top_corner.x + x * it->TileWidth > top_corner.x + screen_width())
+                if(top_corner.x + x * it->TileWidth > screen_width())
                     continue;
 
                 for(unsigned int y = 0; y < it->Height; y++){
 
-                    if(top_corner.y + y * it->TileHeight < 0 )
+                    if(top_corner.y + y * it->TileHeight < tile_start_y)
                         continue;
 
-                    if(top_corner.y + y * it->TileWidth > top_corner.y + screen_height())
+                    if(top_corner.y + y * it->TileWidth > screen_height())
                         continue;
 
                     tile* tile = &it->data[y * it->Height + x];

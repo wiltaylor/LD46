@@ -19,6 +19,9 @@ struct SpriteRenderer: public ecs::Component<SpriteRenderer>{
     glm::vec2 position;
     float width;
     float height;
+    float scroll_speed;
+    glm::vec2 max_position;
+    glm::vec2 min_position;
 };
 
 struct TileMap: public ecs::Component<TileMap> {
@@ -27,9 +30,55 @@ struct TileMap: public ecs::Component<TileMap> {
     unsigned int TileHeight;
     unsigned int TextureWidth;
     unsigned int TextureHeight;
-    unsigned int Width;
-    unsigned int Height;
+    int Width;
+    int Height;
     std::vector<tile> data;
+};
+
+struct Building: public ecs::Component<Building> {
+    std::vector<unsigned int> animation_frames;
+    float hp;
+    float max_hp;
+    float hp_recovery;
+    float animation_speed;
+    float time_to_next_frame;
+    unsigned int current_frame;
+    int width;
+    int height;
+};
+
+enum UnitDirection{
+    UNIT_UP,
+    UNIT_DOWN,
+    UNIT_LEFT,
+    UNIT_RIGHT
+};
+
+struct Unit: public ecs::Component<Unit> {
+    unsigned int up_texture;
+    unsigned int down_texture;
+    unsigned int left_texture;
+    unsigned int right_texture;
+    UnitDirection direction;
+    int width;
+    int height;
+    float speed;
+};
+
+enum AIState {
+    AI_IDLE,
+    AI_MOVE,
+    AI_GATHER,
+    AI_RETURN
+};
+
+struct UnitAI : public ecs::Component<UnitAI> {
+    glm::vec2 target;
+    AIState state;
+};
+
+struct Collider: public ecs::Component<Collider> {
+    float radius;
 };
 
 #endif // __COMPONENTS_H_

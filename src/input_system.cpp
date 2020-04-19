@@ -3,7 +3,7 @@
 #include "events.h"
 #include <functional>
 #include "platform/log.h"
-
+#include "components.h"
 
 void InputSystem::init() {
     m_startframe = std::bind(&InputSystem::on_update, this, std::placeholders::_1);
@@ -35,18 +35,18 @@ void InputSystem::on_update(float deltaTime) {
 
     SDL_PollEvent(&m_event);
 
-    switch(m_event.type){
+    switch(m_event.type) {
         case SDL_QUIT:
             quit();
             break;
         case SDL_MOUSEBUTTONDOWN:
-            if(m_event.button.button == SDL_BUTTON_LEFT && !mouse_left_down) {
+            if (m_event.button.button == SDL_BUTTON_LEFT && !mouse_left_down) {
                 auto em = ecs::get_event_manager();
                 auto event = em->get_event<MouseDownEvent>();
                 event->invoke(m_event.button.x, m_event.button.y, 0);
                 mouse_left_down = true;
             }
-            if(m_event.button.button == SDL_BUTTON_RIGHT && !mouse_right_down) {
+            if (m_event.button.button == SDL_BUTTON_RIGHT && !mouse_right_down) {
                 auto em = ecs::get_event_manager();
                 auto event = em->get_event<MouseDownEvent>();
                 event->invoke(m_event.button.x, m_event.button.y, 1);
@@ -54,13 +54,13 @@ void InputSystem::on_update(float deltaTime) {
             }
             break;
         case SDL_MOUSEBUTTONUP:
-            if(m_event.button.button == SDL_BUTTON_LEFT && mouse_left_down) {
+            if (m_event.button.button == SDL_BUTTON_LEFT && mouse_left_down) {
                 auto em = ecs::get_event_manager();
                 auto event = em->get_event<MouseUpEvent>();
                 event->invoke(m_event.button.x, m_event.button.y, 0);
                 mouse_left_down = false;
             }
-            if(m_event.button.button == SDL_BUTTON_RIGHT && mouse_right_down) {
+            if (m_event.button.button == SDL_BUTTON_RIGHT && mouse_right_down) {
                 auto em = ecs::get_event_manager();
                 auto event = em->get_event<MouseUpEvent>();
                 event->invoke(m_event.button.x, m_event.button.y, 1);
@@ -68,7 +68,79 @@ void InputSystem::on_update(float deltaTime) {
             }
             break;
         case SDL_KEYDOWN:
-            switch(m_event.key.keysym.sym) {
+            switch (m_event.key.keysym.sym) {
+                case SDLK_DOWN: {
+                    auto cm = ecs::get_component_manager();
+                    cm->begin<Camera2D>();
+                    auto cam = cm->next<Camera2D>();
+
+                    cam->position.y += deltaTime * cam->scroll_speed;
+
+
+                    if(cam->position.x < cam->min_position.x)
+                        cam->position.x = cam->min_position.x;
+                    if(cam->position.x > cam->max_position.x)
+                        cam->position.x = cam->max_position.x;
+                    if(cam->position.y < cam->min_position.y)
+                        cam->position.y = cam->min_position.y;
+                    if(cam->position.y > cam->max_position.y)
+                        cam->position.y = cam->max_position.y;
+
+                    break;
+                }
+                case SDLK_UP: {
+                    auto cm = ecs::get_component_manager();
+                    cm->begin<Camera2D>();
+                    auto cam = cm->next<Camera2D>();
+
+                    cam->position.y -= deltaTime * cam->scroll_speed;
+
+                    if(cam->position.x < cam->min_position.x)
+                        cam->position.x = cam->min_position.x;
+                    if(cam->position.x > cam->max_position.x)
+                        cam->position.x = cam->max_position.x;
+                    if(cam->position.y < cam->min_position.y)
+                        cam->position.y = cam->min_position.y;
+                    if(cam->position.y > cam->max_position.y)
+                        cam->position.y = cam->max_position.y;
+
+                    break;
+                }
+                case SDLK_LEFT: {
+                    auto cm = ecs::get_component_manager();
+                    cm->begin<Camera2D>();
+                    auto cam = cm->next<Camera2D>();
+
+                    cam->position.x -= deltaTime * cam->scroll_speed;
+
+                    if(cam->position.x < cam->min_position.x)
+                        cam->position.x = cam->min_position.x;
+                    if(cam->position.x > cam->max_position.x)
+                        cam->position.x = cam->max_position.x;
+                    if(cam->position.y < cam->min_position.y)
+                        cam->position.y = cam->min_position.y;
+                    if(cam->position.y > cam->max_position.y)
+                        cam->position.y = cam->max_position.y;
+
+                    break;
+                }
+                case SDLK_RIGHT: {
+                    auto cm = ecs::get_component_manager();
+                    cm->begin<Camera2D>();
+                    auto cam = cm->next<Camera2D>();
+
+                    cam->position.x += deltaTime * cam->scroll_speed;
+
+                    if(cam->position.x < cam->min_position.x)
+                        cam->position.x = cam->min_position.x;
+                    if(cam->position.x > cam->max_position.x)
+                        cam->position.x = cam->max_position.x;
+                    if(cam->position.y < cam->min_position.y)
+                        cam->position.y = cam->min_position.y;
+                    if(cam->position.y > cam->max_position.y)
+                        cam->position.y = cam->max_position.y;
+                    break;
+                }
                 case SDLK_ESCAPE:
                     quit();
                     break;

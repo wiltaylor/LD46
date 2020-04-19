@@ -44,7 +44,8 @@ endif
 
 ifeq (web, $(BUILDFORPLATFORM))
 	LINKER := emcc
-	LFLAGS := --shell-file src/platform/web/index.html -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s USE_SDL_IMAGE=2
+	##--shell-file src/platform/web/index.html
+	LFLAGS := -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file assets
 	CXX := emcc
 	CXXFLAGS := -std=c++2a -I $(DEPINC)
 

@@ -1,6 +1,7 @@
 #ifndef __SDL_RENDERER_H_
 #define __SDL_RENDERER_H_
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "../renderer.h"
 #include <functional>
 #include "sdl_assetmanager.h"
@@ -17,7 +18,7 @@ public:
     void draw(unsigned int resource_id, glm::vec2 position) override;
     void draw(unsigned int resource_id, Rectangle srcRect, Rectangle destRect) override;
     void draw(unsigned int resource_id, Rectangle srcRect, Rectangle destRect, glm::vec2 center, float angle) override;
-
+    void draw_text(unsigned int font_id, const char* text, glm::vec2 position) override;
 friend AssetManager* get_asset_manager();
 
 private:

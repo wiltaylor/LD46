@@ -12,6 +12,7 @@ public:
     virtual ~AssetManager() {};
 
     virtual unsigned int get_texture_asset(const char* name, AssetPersistance persist) = 0;
+    virtual unsigned int get_font_asset(const char* name, int size, AssetPersistance persist) = 0;
 };
 
 AssetManager* get_asset_manager();
