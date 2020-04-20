@@ -78,6 +78,8 @@ void LevelSystem::on_load_level(unsigned int index){
         case 1:
             new_tilemap(100, 100, 0);
             unit_spawn->invoke(UNIT_Cultist, 600.0f, 200.0f);
+            unit_spawn->invoke(UNIT_Wizard, 500.0f, 200.0f);
+            unit_spawn->invoke(UNIT_Enemy, 400.0f, 200.0f);
             building_spawn->invoke(BUILDING_Monster, 20.0f, 20.0f);
             building_spawn->invoke(BUILDING_Burger, 800.0f, 200.0f);
             break;

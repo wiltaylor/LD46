@@ -20,6 +20,7 @@ public:
     void on_targeted(unsigned int entity);
     void on_selected(unsigned int entity);
     void on_spawn(UnitType type, float x, float y);
+    void on_tile_selected(unsigned int, int x, int y, int button);
 
 private:
     std::function<void()> m_render_event;
@@ -30,11 +31,23 @@ private:
     std::function<void(unsigned int)> m_targeted_event;
     std::function<void(unsigned int)> m_selected_event;
     std::function<void(UnitType, float, float)> m_spawn_event;
+    std::function<void(unsigned int, int,int,int)> m_tile_selected_event;
 
     unsigned int m_worker_down_id;
     unsigned int m_worker_up_id;
     unsigned int m_worker_left_id;
     unsigned int m_worker_right_id;
+
+    unsigned int m_wizard_down_id;
+    unsigned int m_wizard_up_id;
+    unsigned int m_wizard_left_id;
+    unsigned int m_wizard_right_id;
+
+
+    unsigned int m_badguy_down_id;
+    unsigned int m_badguy_up_id;
+    unsigned int m_badguy_left_id;
+    unsigned int m_badguy_right_id;
 
     unsigned int m_selected_unit = 0;
 };

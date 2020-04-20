@@ -136,20 +136,20 @@ void MouseUpEvent::invoke(int x, int y, int button){
     }
 }
 
-void TileSelected::register_handler(std::function<void(int,int,int)>* handler) {
+void TileSelected::register_handler(std::function<void(unsigned int, int,int,int)>* handler) {
     m_functions.push_back(handler);
 }
 
-void TileSelected::unregister_handler(std::function<void(int,int,int) >* handler){
+void TileSelected::unregister_handler(std::function<void(unsigned int, int,int,int) >* handler){
     m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
 }
 
-void TileSelected::invoke(int x, int y, int button){
+void TileSelected::invoke(unsigned int tilemap, int x, int y, int button){
 
     for(auto i = 0; i < m_functions.size(); i++){
         auto func = *m_functions[i];
 
-        func(x, y, button);
+        func(tilemap, x, y, button);
     }
 }
 

@@ -3,6 +3,7 @@
 #include "ecs/entity.h"
 #include "coords.h"
 #include <iostream>
+#include "components.h"
 
 void UISystem::init(){
     m_render_event = std::bind(&UISystem::on_render, this);
@@ -142,7 +143,15 @@ void UISystem::on_render() {
     }else{
         rend->draw(unit->down_texture, glm::vec2(10.0f, screen_height() - unit->height));
 
-
+        switch(unit->type){
+            case UNIT_Cultist:
+                break;
+            case UNIT_Wizard:
+                break;
+            case UNIT_Enemy:
+                rend->draw_text(m_font, "Apply fire to face. If problem persists apply more fire!", glm::vec2(250.0f, screen_height() - 75.0f));
+                break;
+        }
     }
 
 
@@ -150,6 +159,4 @@ void UISystem::on_render() {
 
 void UISystem::on_unit_select(unsigned int entity){
     m_selected_entity = entity;
-
-    std::cout << "Selected!!@!\n";
 }

@@ -9,6 +9,8 @@ void UnitSystem::init() {
     m_update_event = std::bind(&UnitSystem::on_update, this, std::placeholders::_1);
     m_spawn_event = std::bind(&UnitSystem::on_spawn, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
+    m_tile_selected_event = std::bind(&UnitSystem::on_tile_selected, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
+
     m_targeted_event = std::bind(&UnitSystem::on_targeted, this, std::placeholders::_1);
     m_selected_event = std::bind(&UnitSystem::on_selected, this, std::placeholders::_1);
 
@@ -22,6 +24,16 @@ void UnitSystem::init() {
     m_worker_down_id = assetman->get_texture_asset("assets/worker_down.png", Global);
     m_worker_left_id = assetman->get_texture_asset("assets/worker_left.png", Global);
     m_worker_right_id = assetman->get_texture_asset("assets/worker_right.png", Global);
+
+    m_wizard_up_id = assetman->get_texture_asset("assets/wizard_up.png", Global);
+    m_wizard_down_id = assetman->get_texture_asset("assets/wizard_down.png", Global);
+    m_wizard_left_id = assetman->get_texture_asset("assets/wizard_left.png", Global);
+    m_wizard_right_id = assetman->get_texture_asset("assets/wizard_right.png", Global);
+
+    m_badguy_up_id = assetman->get_texture_asset("assets/badguy_up.png", Global);
+    m_badguy_down_id = assetman->get_texture_asset("assets/badguy_down.png", Global);
+    m_badguy_left_id = assetman->get_texture_asset("assets/badguy_left.png", Global);
+    m_badguy_right_id = assetman->get_texture_asset("assets/badguy_right.png", Global);
 }
 
 void UnitSystem::on_enable() {
@@ -33,6 +45,7 @@ void UnitSystem::on_enable() {
     auto targeted_event = em->get_event<UnitTargeted>();
     auto selected_event = em->get_event<UnitSelected>();
     auto spawn_event = em->get_event<SpawnUnitEvent>();
+    auto tile_event = em->get_event<TileSelected>();
 
     event->register_handler(&m_render_event);
     update_event->register_handler(&m_update_event);
@@ -41,6 +54,7 @@ void UnitSystem::on_enable() {
     targeted_event->register_handler(&m_targeted_event);
     selected_event->register_handler(&m_selected_event);
     spawn_event->register_handler(&m_spawn_event);
+    tile_event->register_handler(&m_tile_selected_event);
 }
 
 void UnitSystem::on_disable(){
@@ -52,6 +66,7 @@ void UnitSystem::on_disable(){
     auto targeted_event = em->get_event<UnitTargeted>();
     auto selected_event = em->get_event<UnitSelected>();
     auto spawn_event = em->get_event<SpawnUnitEvent>();
+    auto tile_event = em->get_event<TileSelected>();
 
     event->unregister_handler(&m_render_event);
     update_event->unregister_handler(&m_update_event);
@@ -60,6 +75,43 @@ void UnitSystem::on_disable(){
     targeted_event->unregister_handler(&m_targeted_event);
     selected_event->unregister_handler(&m_selected_event);
     spawn_event->unregister_handler(&m_spawn_event);
+    tile_event->unregister_handler(&m_tile_selected_event);
+}
+
+void UnitSystem::on_tile_selected(unsigned int tilemap, int x, int y, int button){
+    auto ent = ecs::get_entity_manager();
+    auto env = ecs::get_event_manager();
+
+    if(m_selected_unit == 0)
+        return;
+
+    if(button == 0){
+        auto select_event = env->get_event<UnitSelected>();
+
+        select_event->invoke(0);
+        return;
+    }
+
+    if(button == 1)
+    {
+        auto unit = ent->get_component<Unit>(m_selected_unit);
+
+        if(unit == nullptr)
+            return;
+
+        if(unit->type != UNIT_Cultist && unit->type != UNIT_Wizard)
+            return;
+
+        auto ai = ent->get_component<UnitAI>(m_selected_unit);
+        auto tmap = ent->get_component<TileMap>(tilemap);
+        auto tmap_trans = ent->get_component<Transform2D>(tilemap);
+
+        ai->target.x = tmap_trans->position.x + (x * tmap->TileWidth);
+        ai->target.y = tmap_trans->position.y + (y * tmap->TileHeight);
+        ai->state = AI_MOVE;
+
+        std::cout << "Moving to " << ai->target.x << "/" << ai->target.y << "\n";
+    }
 }
 
 void UnitSystem::on_spawn(UnitType type, float x, float y){
@@ -92,9 +144,42 @@ void UnitSystem::on_spawn(UnitType type, float x, float y){
             break;
         }
         case UNIT_Wizard: {
+
+            unit->up_texture = m_wizard_up_id;
+            unit->down_texture = m_wizard_down_id;
+            unit->right_texture = m_wizard_right_id;
+            unit->left_texture = m_wizard_left_id;
+            unit->direction = UNIT_DOWN;
+            unit->width = 64;
+            unit->height = 64;
+            unit->speed = 60.0f;
+            unit->type = UNIT_Wizard;
+            unit->hide = false;
+
+            trans->position.x = x;
+            trans->position.y = y;
+
+            ai->state = AI_IDLE;
+            ai->hide_timeout = 5.0f;
             break;
         }
         case UNIT_Enemy: {
+            unit->up_texture = m_badguy_up_id;
+            unit->down_texture = m_badguy_down_id;
+            unit->right_texture = m_badguy_right_id;
+            unit->left_texture = m_badguy_left_id;
+            unit->direction = UNIT_DOWN;
+            unit->width = 64;
+            unit->height = 64;
+            unit->speed = 60.0f;
+            unit->type = UNIT_Enemy;
+            unit->hide = false;
+
+            trans->position.x = x;
+            trans->position.y = y;
+
+            ai->state = AI_IDLE;
+            ai->hide_timeout = 5.0f;
             break;
         }
     }

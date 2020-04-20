@@ -87,12 +87,12 @@ private:
 
 class TileSelected: public ecs::Event<TileSelected> {
 public:
-    void register_handler(std::function<void(int, int, int)>* handler);
-    void unregister_handler(std::function<void(int, int, int)>* handler);
-    void invoke(int x, int y, int button);
+    void register_handler(std::function<void(unsigned int, int, int, int)>* handler);
+    void unregister_handler(std::function<void(unsigned int, int, int, int)>* handler);
+    void invoke(unsigned int, int x, int y, int button);
 
 private:
-    std::vector<std::function<void(int, int, int)>*> m_functions;
+    std::vector<std::function<void(unsigned int, int, int, int)>*> m_functions;
 };
 
 class UnitSelected: public ecs::Event<UnitSelected> {

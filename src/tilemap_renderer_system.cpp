@@ -78,10 +78,10 @@ bool TileMapRendererSystem::on_mousedown(int x, int y, int button) {
             int y_tile = click_spot.y / it->TileWidth;
 
             auto evm = ecs::get_event_manager();
-            auto event = evm->get_event<UnitSelected>();
-            event->invoke(0);
+            auto event = evm->get_event<TileSelected>();
 
-            std::cout << "Tile clicked " << x_tile << "/" << y_tile << "\n";
+            event->invoke(it->Entity, x_tile, y_tile, button);
+
             return true;
         }
 
