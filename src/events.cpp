@@ -186,3 +186,54 @@ void UnitTargeted::invoke(unsigned int entity){
         func(entity);
     }
 }
+
+void SpawnUnitEvent::register_handler(std::function<void(UnitType, float, float)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void SpawnUnitEvent::unregister_handler(std::function<void(UnitType, float, float)>* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void SpawnUnitEvent::invoke(UnitType type, float x, float y){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(type, x, y);
+    }
+}
+
+void SpawnBuildingEvent::register_handler(std::function<void(BuildingType, float, float)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void SpawnBuildingEvent::unregister_handler(std::function<void(BuildingType, float, float)>* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void SpawnBuildingEvent::invoke(BuildingType type, float x, float y){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(type, x, y);
+    }
+}
+
+void LoadLevelEvent::register_handler(std::function<void(unsigned int)>* handler) {
+    m_functions.push_back(handler);
+}
+
+void LoadLevelEvent::unregister_handler(std::function<void(unsigned int)>* handler){
+    m_functions.erase(std::remove(m_functions.begin(), m_functions.end(), handler), m_functions.end());
+}
+
+void LoadLevelEvent::invoke(unsigned int index){
+
+    for(auto i = 0; i < m_functions.size(); i++){
+        auto func = *m_functions[i];
+
+        func(index);
+    }
+}

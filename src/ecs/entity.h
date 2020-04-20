@@ -21,6 +21,8 @@ namespace ecs{
         void remove_tag(unsigned int entity, unsigned int tagId);
         const std::vector<unsigned int>* get_tags(unsigned int entity);
 
+        void clear_all();
+
         template<typename T>
         T* add_component(unsigned int entity) {
             if(!entity_exists(entity))

@@ -4,9 +4,16 @@
 #include "platform/renderer.h"
 #include "coords.h"
 #include <iostream>
-
+#include "platform/asset.h"
 void BuildingSystem::init() {
     m_render_event = std::bind(&BuildingSystem::on_render, this);
+
+    auto assetman = get_asset_manager();
+    m_monster1 = assetman->get_texture_asset("assets/monster_frame1.png", Global);
+    m_monster2 = assetman->get_texture_asset("assets/monster_frame2.png", Global);
+    m_burger1 = assetman->get_texture_asset("assets/burger_building.png", Global);
+
+    m_on_spawn_event = std::bind(&BuildingSystem::on_spawn, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
     m_mousedown_event = std::bind(&BuildingSystem::on_mousedown, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     m_mouseup_event = std::bind(&BuildingSystem::on_mouseup, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -17,10 +24,12 @@ void BuildingSystem::on_enable(){
     auto event = em->get_event<RenderEvent>();
     auto mouseup_event = em->get_event<MouseUpEvent>();
     auto mousedown_event = em->get_event<MouseDownEvent>();
+    auto spawn_event = em->get_event<SpawnBuildingEvent>();
 
     event->register_handler(&m_render_event);
     mouseup_event->register_handler_priority(&m_mouseup_event);
     mousedown_event->register_handler_priority(&m_mousedown_event);
+    spawn_event->register_handler(&m_on_spawn_event);
 
 }
 
@@ -29,12 +38,59 @@ void BuildingSystem::on_disable() {
     auto event = em->get_event<RenderEvent>();
     auto mouseup_event = em->get_event<MouseUpEvent>();
     auto mousedown_event = em->get_event<MouseDownEvent>();
+    auto spawn_event = em->get_event<SpawnBuildingEvent>();
 
     event->unregister_handler(&m_render_event);
     mouseup_event->unregister_handler(&m_mouseup_event);
     mousedown_event->unregister_handler(&m_mousedown_event);
+    spawn_event->unregister_handler(&m_on_spawn_event);
 }
 
+void BuildingSystem::on_spawn(BuildingType type, float x, float y){
+    auto ent = ecs::get_entity_manager();
+
+    switch(type){
+        case BUILDING_Monster: {
+            auto entity = ent->add_entity();
+            auto building = ent->add_component<Building>(entity);
+            auto trans = ent->add_component<Transform2D>(entity);
+
+            building->animation_frames.push_back(m_monster1);
+            building->animation_frames.push_back(m_monster2);
+            building->hp = 100.0f;
+            building->max_hp = 100.0f;
+            building->hp_recovery = 0.01f;
+            building->animation_speed = 2.0f;
+            building->current_frame = 0;
+            building->width = 200;
+            building->height = 200;
+            building->type = BUILDING_Monster;
+
+            trans->position.x = x;
+            trans->position.y = y;
+            break;
+        }
+        case BUILDING_Burger: {
+            auto entity = ent->add_entity();
+            auto building = ent->add_component<Building>(entity);
+            auto trans = ent->add_component<Transform2D>(entity);
+
+            building->animation_frames.push_back(m_burger1);
+            building->hp = 100.0f;
+            building->max_hp = 100.0f;
+            building->hp_recovery = 0.01f;
+            building->animation_speed = -1.0f;
+            building->current_frame = 0;
+            building->width = 128;
+            building->height = 128;
+            building->type = BUILDING_Burger;
+
+            trans->position.x = x;
+            trans->position.y = y;
+            break;
+        }
+    }
+}
 
 bool BuildingSystem::on_mousedown(int x, int y, int button){
     auto cm = ecs::get_component_manager();

@@ -2,16 +2,26 @@
 #include "ecs/entity.h"
 #include "platform/renderer.h"
 #include "coords.h"
-
+#include "platform/asset.h"
+#include <iostream>
 void UnitSystem::init() {
     m_render_event = std::bind(&UnitSystem::on_render, this);
     m_update_event = std::bind(&UnitSystem::on_update, this, std::placeholders::_1);
+    m_spawn_event = std::bind(&UnitSystem::on_spawn, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
     m_targeted_event = std::bind(&UnitSystem::on_targeted, this, std::placeholders::_1);
     m_selected_event = std::bind(&UnitSystem::on_selected, this, std::placeholders::_1);
 
     m_mousedown_event = std::bind(&UnitSystem::on_mousedown, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     m_mouseup_event = std::bind(&UnitSystem::on_mouseup, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+
+
+    auto assetman =get_asset_manager();
+
+    m_worker_up_id = assetman->get_texture_asset("assets/worker_up.png", Global);
+    m_worker_down_id = assetman->get_texture_asset("assets/worker_down.png", Global);
+    m_worker_left_id = assetman->get_texture_asset("assets/worker_left.png", Global);
+    m_worker_right_id = assetman->get_texture_asset("assets/worker_right.png", Global);
 }
 
 void UnitSystem::on_enable() {
@@ -22,6 +32,7 @@ void UnitSystem::on_enable() {
     auto mousedown_event = em->get_event<MouseDownEvent>();
     auto targeted_event = em->get_event<UnitTargeted>();
     auto selected_event = em->get_event<UnitSelected>();
+    auto spawn_event = em->get_event<SpawnUnitEvent>();
 
     event->register_handler(&m_render_event);
     update_event->register_handler(&m_update_event);
@@ -29,6 +40,7 @@ void UnitSystem::on_enable() {
     mousedown_event->register_handler_priority(&m_mousedown_event);
     targeted_event->register_handler(&m_targeted_event);
     selected_event->register_handler(&m_selected_event);
+    spawn_event->register_handler(&m_spawn_event);
 }
 
 void UnitSystem::on_disable(){
@@ -39,6 +51,7 @@ void UnitSystem::on_disable(){
     auto mousedown_event = em->get_event<MouseDownEvent>();
     auto targeted_event = em->get_event<UnitTargeted>();
     auto selected_event = em->get_event<UnitSelected>();
+    auto spawn_event = em->get_event<SpawnUnitEvent>();
 
     event->unregister_handler(&m_render_event);
     update_event->unregister_handler(&m_update_event);
@@ -46,6 +59,45 @@ void UnitSystem::on_disable(){
     mousedown_event->unregister_handler(&m_mousedown_event);
     targeted_event->unregister_handler(&m_targeted_event);
     selected_event->unregister_handler(&m_selected_event);
+    spawn_event->unregister_handler(&m_spawn_event);
+}
+
+void UnitSystem::on_spawn(UnitType type, float x, float y){
+    auto ent = ecs::get_entity_manager();
+    auto entity = ent->add_entity();
+    auto unit = ent->add_component<Unit>(entity);
+    auto trans = ent->add_component<Transform2D>(entity);
+    auto ai = ent->add_component<UnitAI>(entity);
+
+    std::cout << "triggered spawn\n" ;
+
+    switch(type){
+        case UNIT_Cultist: {
+            unit->up_texture = m_worker_up_id;
+            unit->down_texture = m_worker_down_id;
+            unit->right_texture = m_worker_right_id;
+            unit->left_texture = m_worker_left_id;
+            unit->direction = UNIT_DOWN;
+            unit->width = 64;
+            unit->height = 64;
+            unit->speed = 60.0f;
+            unit->type = UNIT_Cultist;
+            unit->hide = false;
+
+            trans->position.x = x;
+            trans->position.y = y;
+
+            ai->state = AI_IDLE;
+            ai->hide_timeout = 5.0f;
+            break;
+        }
+        case UNIT_Wizard: {
+            break;
+        }
+        case UNIT_Enemy: {
+            break;
+        }
+    }
 }
 
 void UnitSystem::on_targeted(unsigned int entity){

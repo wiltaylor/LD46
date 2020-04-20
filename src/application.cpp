@@ -5,12 +5,13 @@
 #include "input_system.h"
 #include "render_system.h"
 #include "platform/log.h"
-#include "test_system.h"
 #include "sprite_render_system.h"
 #include "tilemap_renderer_system.h"
 #include "building_system.h"
 #include "unit_system.h"
 #include "ui_system.h"
+#include "level_system.h"
+#include "components.h"
 
 static float current_delta_time;
 
@@ -32,26 +33,41 @@ Application::Application(){
     m_exitHandler = std::bind(&Application::onExit, this);
     m_shutdown->register_handler(&m_exitHandler);
 
+    log_info("Registering components");
+    auto cm = ecs::get_component_manager();
+    cm->register_component_type<Transform2D>(100);
+    cm->register_component_type<SpriteRenderer>(100);
+    cm->register_component_type<Camera2D>(1);
+    cm->register_component_type<TileMap>(1);
+    cm->register_component_type<Building>(20);
+    cm->register_component_type<Collider>(100);
+    cm->register_component_type<Unit>(100);
+    cm->register_component_type<UnitAI>(100);
+
     log_info("Registering systems");
     auto sm = ecs::get_system_manager();
     sm->register_system<RenderSystem>();
     sm->register_system<InputSystem>();
-    sm->register_system<TestSystem>();
     sm->register_system<SpriteRenderSystem>();
     sm->register_system<TileMapRendererSystem>();
     sm->register_system<BuildingSystem>();
     sm->register_system<UnitSystem>();
     sm->register_system<UISystem>();
+    sm->register_system<LevelSystem>();
 
     log_info("Enabling systems");
     sm->enable<RenderSystem>();
     sm->enable<InputSystem>();
-    sm->enable<TestSystem>();
     sm->enable<SpriteRenderSystem>();
     sm->enable<TileMapRendererSystem>();
     sm->enable<BuildingSystem>();
     sm->enable<UnitSystem>();
     sm->enable<UISystem>();
+    sm->enable<LevelSystem>();
+
+    auto env = ecs::get_event_manager();
+    auto load_level_event = env->get_event<LoadLevelEvent>();
+    load_level_event->invoke(1);
 }
 
 void Application::onExit(){

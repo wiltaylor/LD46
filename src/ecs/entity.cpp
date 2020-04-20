@@ -33,11 +33,35 @@ unsigned int ecs::EntityManager::add_entity() {
     return entity;
 }
 
+void ecs::EntityManager::clear_all(){
+    auto cm = ecs::get_component_manager();
+
+    for(auto it = m_components.begin(); it != m_components.end(); ++it){
+        for(auto it_cmp = it->second->begin(); it_cmp != it->second->end(); ++it_cmp)
+        {
+            auto cmp = *it_cmp;
+            cm->remove_component(cmp);
+        }
+    }
+
+    //todo: fix tags so they are useful
+
+
+}
+
 void ecs::EntityManager::remove_entity(unsigned int entity) {
+    auto cm = ecs::get_component_manager();
     auto it = m_components.find(entity);
 
-    if(it != m_components.end())
+    if(it != m_components.end()){
+        for(auto it_cmp = it->second->begin(); it_cmp != it->second->end(); ++it_cmp)
+        {
+            auto cmp = *it_cmp;
+            cm->remove_component(cmp);
+        }
+
         m_components.erase(it);
+    }
 
     auto it_tag = m_tags.find(entity);
 

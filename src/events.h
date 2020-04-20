@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include <glm/glm.hpp>
+#include "components.h"
 
 void register_all_events();
 
@@ -110,6 +111,36 @@ public:
     void register_handler(std::function<void(unsigned int)>* handler);
     void unregister_handler(std::function<void(unsigned int)>* handler);
     void invoke(unsigned int entity);
+
+private:
+    std::vector<std::function<void(unsigned int)>*> m_functions;
+};
+
+class SpawnUnitEvent: public ecs::Event<SpawnUnitEvent> {
+public:
+    void register_handler(std::function<void(UnitType, float, float)>* handler);
+    void unregister_handler(std::function<void(UnitType, float, float)>* handler);
+    void invoke(UnitType type, float x, float y);
+
+private:
+    std::vector<std::function<void(UnitType,float,float)>*> m_functions;
+};
+
+class SpawnBuildingEvent: public ecs::Event<SpawnBuildingEvent> {
+public:
+    void register_handler(std::function<void(BuildingType, float, float)>* handler);
+    void unregister_handler(std::function<void(BuildingType, float, float)>* handler);
+    void invoke(BuildingType building, float x, float y);
+
+private:
+    std::vector<std::function<void(BuildingType, float, float)>*> m_functions;
+};
+
+class LoadLevelEvent: public ecs::Event<LoadLevelEvent> {
+public:
+    void register_handler(std::function<void(unsigned int)>* handler);
+    void unregister_handler(std::function<void(unsigned int)>* handler);
+    void invoke(unsigned int index);
 
 private:
     std::vector<std::function<void(unsigned int)>*> m_functions;
